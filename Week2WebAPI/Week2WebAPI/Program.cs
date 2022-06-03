@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Week2WebAPI.Core.Interfaces;
 using Week2WebAPI.Core.Mapping;
 using Week2WebAPI.Core.Models;
 using Week2WebAPI.Core.Shared.Interfaces;
@@ -12,14 +14,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddDbContext<WebAPIContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("WebAPIConnection")));
-builder.Services.AddScoped<IAsyncRepository<Product>, AsyncRepository<Product>>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IAsyncRepository<Product>, AsyncRepository<Product>>();
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
         name: "_myAllowOrigins",
-        builder => builder.WithOrigins("http://localhost:5210")
+        builder => builder.WithOrigins("http://localhost:5007")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
@@ -68,19 +71,16 @@ if (app.Environment.IsDevelopment())
     //app.UseSwagger();
     //app.UseSwaggerUI();
 }
-
-//app.UseHttpsRedirection();
-app.UseRouting();
-app.UseCors("_myAllowOrigins");
-
-app.UseAuthorization();
 app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Week2WebAPI v1"));
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
 
-//app.MapControllers();
 
-//app.Run();
+app.UseCors("_myAllowOrigins");
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();

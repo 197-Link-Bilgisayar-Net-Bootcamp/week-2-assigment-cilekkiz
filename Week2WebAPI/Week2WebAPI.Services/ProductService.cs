@@ -41,44 +41,30 @@ namespace Week2WebAPI.Services
             }
         }
 
-        public Task<ProductDTO> CreateProductAsync(ProductDTO newEntity)
+        public async Task<ProductDTO> CreateProductAsync(ProductDTO newEntity)
         {
-            throw new NotImplementedException();
+            var productModel = _mapper.Map<Product>(newEntity);
+            await _uow.ProductRepository.CreateAsync(productModel);
+            await _uow.SaveAsync();
+            return newEntity;
         }
         public async Task<ProductDTO> UpdateProductAsync(ProductDTO entity)
         {
-            var product = await _uow.ProductRepository.GetByIdAsync(entity.Id);
-            if (product == null)
-            {
-                throw new Exception("Product not found.");
-            }
-            else
-            {
-                Product updateProduct = new();
-                updateProduct.Name = entity.Name;
-                updateProduct.Description = entity.Description;
-                updateProduct.Price = entity.Price;
-                await _uow.ProductRepository.UpdateAsync(updateProduct);
-                await _uow.SaveAsync();
-                return entity;
-            }
+            var updateProduct = _mapper.Map<Product>(entity);
+            await _uow.ProductRepository.UpdateAsync(updateProduct);
+            await _uow.SaveAsync();
+            return entity;
         }
         public async Task<ProductDTO> DeleteProductAsync(Guid id)
         {
             var product = await _uow.ProductRepository.GetByIdAsync(id);
-            if (product == null)
-            {
-                throw new Exception("Product not found.");
-            }
-            else
-            {
-                var productModel = _mapper.Map<ProductDTO>(product);
 
-                await _uow.ProductRepository.DeleteAsync(product);
-                await _uow.SaveAsync();
+            var productModel = _mapper.Map<ProductDTO>(product);
 
-                return productModel;
-            }
+            await _uow.ProductRepository.DeleteAsync(product);
+            await _uow.SaveAsync();
+
+            return productModel;
         }
     }
 }

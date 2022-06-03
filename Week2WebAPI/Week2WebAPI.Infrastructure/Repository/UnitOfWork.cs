@@ -26,7 +26,6 @@ namespace Week2WebAPI.Infrastructure.Repository
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
 
         public async Task<int> SaveAsync()

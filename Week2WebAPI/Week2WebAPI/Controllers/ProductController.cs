@@ -5,7 +5,7 @@ using Week2WebAPI.Services;
 namespace Week2WebAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]/{action}")]
+    [Route("[controller]/[action]")]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
